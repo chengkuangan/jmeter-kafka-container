@@ -58,7 +58,7 @@ The parameters can be set via the POD environment flag `-e`
 
 There is a configuration script that you can use to quickly configure and deploy Red Hat AMQ Streams, Kafka Topic, Promethues and Grafana. 
 
-Clone this repo into your local directory and ensure that the Red Hat AMQ Streams Operator is installed and ready. Run the following command to deploy the environment. 
+Clone this repo into your local directory and ensure that the Red Hat AMQ Streams Operator is installed and ready. Run the following command from the `bin` directory to deploy the environment. 
 
 `deploy.sh -i`
 
@@ -239,5 +239,5 @@ Kafka Grafana Dashboard on OpenShift
 
 # References
 
-- Recommended [JMeter Promethues Plugin](https://github.com/johrstrom/jmeter-prometheus-plugin) on [Prometheus website](https://grafana.com/grafana/dashboards/2492) .
+- Refer to [This is How You Can Load Test Apache Kafka on OpenShift Container Platform Using Apache JMeter](https://braindose.blog/2021/03/11/load-test-apache-kafka-openshift-apache-jmeter/) for detail explanation and steps.
 
