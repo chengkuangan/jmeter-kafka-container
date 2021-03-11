@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.4">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Kafka Performance Test Pan" enabled="true">
+      <stringProp name="TestPlan.comments"></stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="JMETER_THREADS" elementType="Argument">
+            <stringProp name="Argument.name">JMETER_THREADS</stringProp>
+            <stringProp name="Argument.value">${__P(jmeter.threads, 1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="BOOTSTRAP_SERVERS" elementType="Argument">
+            <stringProp name="Argument.name">BOOTSTRAP_SERVERS</stringProp>
+            <stringProp name="Argument.value">${__P(bootstrap.servers, localhost:9092)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="BATCH_SIZE" elementType="Argument">
+            <stringProp name="Argument.name">BATCH_SIZE</stringProp>
+            <stringProp name="Argument.value">${__P(batch.size, 16384)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="LINGER_MS" elementType="Argument">
+            <stringProp name="Argument.name">LINGER_MS</stringProp>
+            <stringProp name="Argument.value">${__P(linger.ms, 1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="BUFFER_MEMORY" elementType="Argument">
+            <stringProp name="Argument.name">BUFFER_MEMORY</stringProp>
+            <stringProp name="Argument.value">${__P(buffer.memory, 33554432)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="ACKS" elementType="Argument">
+            <stringProp name="Argument.name">ACKS</stringProp>
+            <stringProp name="Argument.value">${__P(acks, 1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="COMPRESSION_TYPE" elementType="Argument">
+            <stringProp name="Argument.name">COMPRESSION_TYPE</stringProp>
+            <stringProp name="Argument.value">${__P(compression.type, none)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="SEND_BUFFER_BYTES" elementType="Argument">
+            <stringProp name="Argument.name">SEND_BUFFER_BYTES</stringProp>
+            <stringProp name="Argument.value">${__P(send_buffer.bytes, 131072)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="RECEIVE_BUFFER_BYTES" elementType="Argument">
+            <stringProp name="Argument.name">RECEIVE_BUFFER_BYTES</stringProp>
+            <stringProp name="Argument.value">${__P(receive_buffer.bytes, 32768)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="KAFKA_TOPIC" elementType="Argument">
+            <stringProp name="Argument.name">KAFKA_TOPIC</stringProp>
+            <stringProp name="Argument.value">${__P(kafka.topic, jmeter-test)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="PARTITION_NO" elementType="Argument">
+            <stringProp name="Argument.name">PARTITION_NO</stringProp>
+            <stringProp name="Argument.value">${__P(partition.no, 1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="RAMPUP_PERIOD" elementType="Argument">
+            <stringProp name="Argument.name">RAMPUP_PERIOD</stringProp>
+            <stringProp name="Argument.value">${__P(ramup.period, 2)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="LOOP_COUNT" elementType="Argument">
+            <stringProp name="Argument.name">LOOP_COUNT</stringProp>
+            <stringProp name="Argument.value">${__P(loop.count, -1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="SAMPLER_LABEL" elementType="Argument">
+            <stringProp name="Argument.name">SAMPLER_LABEL</stringProp>
+            <stringProp name="Argument.value">${__P(sampler.label, Kafka JSR223)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="KAFKA_MESSAGE" elementType="Argument">
+            <stringProp name="Argument.name">KAFKA_MESSAGE</stringProp>
+            <stringProp name="Argument.value">${__P(kafka.message, The fox is flying over the fence and the fence is trying to stop the fox.)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="THREADGROUP_SCHEDULER" elementType="Argument">
+            <stringProp name="Argument.name">THREADGROUP_SCHEDULER</stringProp>
+            <stringProp name="Argument.value">${__P(threadgroup.scheduler, false)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="THREADGROUP_DURATION" elementType="Argument">
+            <stringProp name="Argument.name">THREADGROUP_DURATION</stringProp>
+            <stringProp name="Argument.value">${__P(threadgroup.duration, 0)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="THREADGROUP_DELAY" elementType="Argument">
+            <stringProp name="Argument.name">THREADGROUP_DELAY</stringProp>
+            <stringProp name="Argument.value">${__P(threadgroup.delay, 0)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="THREADGROUP_SAME_USER_NEXT_ITERATION" elementType="Argument">
+            <stringProp name="Argument.name">THREADGROUP_SAME_USER_NEXT_ITERATION</stringProp>
+            <stringProp name="Argument.value">${__P(threadgroup.same_user_on_next_iteration, false)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="THREADGROUP_DELAYSTART" elementType="Argument">
+            <stringProp name="Argument.name">THREADGROUP_DELAYSTART</stringProp>
+            <stringProp name="Argument.value">${__P(threadgroup.delaystart, true)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Thread Group" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">${LOOP_COUNT}</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">${JMETER_THREADS}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${RAMPUP_PERIOD}</stringProp>
+        <boolProp name="ThreadGroup.scheduler">${THREADGROUP_SCHEDULER}</boolProp>
+        <stringProp name="ThreadGroup.duration">${THREADGROUP_DURATION}</stringProp>
+        <stringProp name="ThreadGroup.delay">${THREADGROUP_DELAY}</stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">${THREADGROUP_SAME_USER_NEXT_ITERATION}</boolProp>
+        <boolProp name="ThreadGroup.delayedStart">${THREADGROUP_DELAYSTART}</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="${SAMPLER_LABEL}" enabled="true">
+          <stringProp name="scriptLanguage">groovy</stringProp>
+          <stringProp name="parameters"></stringProp>
+          <stringProp name="filename"></stringProp>
+          <stringProp name="cacheKey">true</stringProp>
+          <stringProp name="script">
+          
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.header.Header;
+import org.apache.kafka.common.header.internals.RecordHeader;
+import org.apache.kafka.common.header.Headers;
+import org.apache.kafka.common.header.internals.RecordHeaders;
+
+Properties props = new Properties();
+
+props.put(&quot;bootstrap.servers&quot;, &quot;${BOOTSTRAP_SERVERS}&quot;);
+props.put(&quot;key.serializer&quot;, &quot;org.apache.kafka.common.serialization.StringSerializer&quot;);
+props.put(&quot;value.serializer&quot;, &quot;org.apache.kafka.common.serialization.StringSerializer&quot;);
+props.put(&quot;compression.type&quot;, &quot;${COMPRESSION_TYPE}&quot;);
+props.put(&quot;batch.size&quot;, &quot;${BATCH_SIZE}&quot;);
+props.put(&quot;linger.ms&quot;, &quot;${LINGER_MS}&quot;);
+props.put(&quot;buffer.memory&quot;, &quot;${BUFFER_MEMORY}&quot;);
+props.put(&quot;acks&quot;, &quot;${ACKS}&quot;);
+props.put(&quot;send.buffer.bytes&quot;, &quot;${SEND_BUFFER_BYTES}&quot;);
+props.put(&quot;receive.buffer.bytes&quot;, &quot;${RECEIVE_BUFFER_BYTES}&quot;);
+
+// String message = &quot;The fox is flying over the fence and the fence is trying to stop the fox.&quot;;
+
+KafkaProducer&lt;String, String&gt; producer = new KafkaProducer&lt;String, String&gt;(props);
+// producer.send(new ProducerRecord&lt;String, String&gt;(&quot;${KAFKA_TOPIC}&quot;, Integer.toString(${PARTITION_NO}), &quot;${KAFKA_MESSAGE}&quot;));
+producer.send(new ProducerRecord&lt;String, String&gt;(&quot;${KAFKA_TOPIC}&quot;, &quot;${KAFKA_MESSAGE}&quot;));
+producer.close();
+
+          </stringProp>
+        </JSR223Sampler>
+        <hashTree/>
+      </hashTree>
+      <com.github.johrstrom.listener.PrometheusListener guiclass="com.github.johrstrom.listener.gui.PrometheusListenerGui" testclass="com.github.johrstrom.listener.PrometheusListener" testname="Prometheus Listener" enabled="true">
+        <collectionProp name="prometheus.collector_definitions">
+          <elementProp name="" elementType="com.github.johrstrom.listener.ListenerCollectorConfig">
+            <stringProp name="collector.help">the response time for a jsr223 sampler</stringProp>
+            <stringProp name="collector.metric_name">jsr223_rt_as_hist</stringProp>
+            <stringProp name="collector.type">HISTOGRAM</stringProp>
+            <collectionProp name="collector.labels">
+              <stringProp name="102727412">label</stringProp>
+            </collectionProp>
+            <stringProp name="collector.quantiles_or_buckets">100,500,1000,3000</stringProp>
+            <stringProp name="listener.collector.listen_to">samples</stringProp>
+            <stringProp name="listener.collector.measuring">ResponseTime</stringProp>
+          </elementProp>
+          <elementProp name="" elementType="com.github.johrstrom.listener.ListenerCollectorConfig">
+            <stringProp name="collector.help">the response time for a jsr223 sampler</stringProp>
+            <stringProp name="collector.metric_name">jsr223_rt_as_summary</stringProp>
+            <stringProp name="collector.type">SUMMARY</stringProp>
+            <collectionProp name="collector.labels">
+              <stringProp name="50511102">category</stringProp>
+              <stringProp name="102727412">label</stringProp>
+              <stringProp name="3059181">code</stringProp>
+            </collectionProp>
+            <stringProp name="collector.quantiles_or_buckets">0.75,0.5|0.95,0.1|0.99,0.01</stringProp>
+            <stringProp name="listener.collector.measuring">ResponseTime</stringProp>
+          </elementProp>
+          <elementProp name="" elementType="com.github.johrstrom.listener.ListenerCollectorConfig">
+            <stringProp name="collector.help">the total number of samplers</stringProp>
+            <stringProp name="collector.metric_name">jsr223_count_total</stringProp>
+            <stringProp name="collector.type">COUNTER</stringProp>
+            <collectionProp name="collector.labels">
+              <stringProp name="102727412">label</stringProp>
+            </collectionProp>
+            <stringProp name="collector.quantiles_or_buckets"></stringProp>
+            <stringProp name="listener.collector.measuring">CountTotal</stringProp>
+          </elementProp>
+          <elementProp name="" elementType="com.github.johrstrom.listener.ListenerCollectorConfig">
+            <stringProp name="collector.help">the total number of successful samplers</stringProp>
+            <stringProp name="collector.metric_name">jsr223_success_total</stringProp>
+            <stringProp name="collector.type">COUNTER</stringProp>
+            <collectionProp name="collector.labels">
+              <stringProp name="102727412">label</stringProp>
+            </collectionProp>
+            <stringProp name="collector.quantiles_or_buckets"></stringProp>
+            <stringProp name="listener.collector.measuring">SuccessTotal</stringProp>
+          </elementProp>
+          <elementProp name="" elementType="com.github.johrstrom.listener.ListenerCollectorConfig">
+            <stringProp name="collector.help">the response size for a jsr223 sampler</stringProp>
+            <stringProp name="collector.metric_name">jsr223_rsize_as_hist</stringProp>
+            <stringProp name="collector.type">HISTOGRAM</stringProp>
+            <collectionProp name="collector.labels"/>
+            <stringProp name="collector.quantiles_or_buckets">100,500,1000,3000</stringProp>
+            <stringProp name="listener.collector.measuring">ResponseSize</stringProp>
+          </elementProp>
+          <elementProp name="" elementType="com.github.johrstrom.listener.ListenerCollectorConfig">
+            <stringProp name="collector.help">success ratio of the can_fail_sampler</stringProp>
+            <stringProp name="collector.metric_name">jsr223_can_fail</stringProp>
+            <stringProp name="collector.type">SUCCESS_RATIO</stringProp>
+            <collectionProp name="collector.labels"/>
+            <stringProp name="collector.quantiles_or_buckets"></stringProp>
+            <stringProp name="listener.collector.measuring">SuccessRatio</stringProp>
+          </elementProp>
+          <elementProp name="" elementType="com.github.johrstrom.listener.ListenerCollectorConfig">
+            <stringProp name="collector.help">the latency (ttfb) for a jsr223 sampler</stringProp>
+            <stringProp name="collector.metric_name">jsr223_latency_as_hist</stringProp>
+            <stringProp name="collector.type">HISTOGRAM</stringProp>
+            <collectionProp name="collector.labels">
+              <stringProp name="102727412">label</stringProp>
+            </collectionProp>
+            <stringProp name="collector.quantiles_or_buckets">100,500,1000,3000</stringProp>
+            <stringProp name="listener.collector.measuring">Latency</stringProp>
+          </elementProp>
+          <elementProp name="" elementType="com.github.johrstrom.listener.ListenerCollectorConfig">
+            <stringProp name="collector.help">the idle time for a jsr223 sampler</stringProp>
+            <stringProp name="collector.metric_name">jsr223_idle_time</stringProp>
+            <stringProp name="collector.type">SUMMARY</stringProp>
+            <collectionProp name="collector.labels"/>
+            <stringProp name="collector.quantiles_or_buckets">0.75,0.5|0.95,0.1|0.99,0.01</stringProp>
+            <stringProp name="listener.collector.measuring">IdleTime</stringProp>
+          </elementProp>
+          <elementProp name="" elementType="com.github.johrstrom.listener.ListenerCollectorConfig">
+            <stringProp name="collector.help">default help string</stringProp>
+            <stringProp name="collector.metric_name">jsr223_assertions</stringProp>
+            <stringProp name="collector.type">SUCCESS_RATIO</stringProp>
+            <collectionProp name="collector.labels">
+              <stringProp name="102727412">label</stringProp>
+            </collectionProp>
+            <stringProp name="collector.quantiles_or_buckets"></stringProp>
+            <stringProp name="listener.collector.measuring">SuccessRatio</stringProp>
+            <stringProp name="listener.collector.listen_to">assertions</stringProp>
+          </elementProp>
+        </collectionProp>
+      </com.github.johrstrom.listener.PrometheusListener>
+      <hashTree/>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

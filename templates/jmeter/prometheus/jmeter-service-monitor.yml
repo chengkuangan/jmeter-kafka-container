@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    k8s-app: jmeter-service-monitor
+  name: jmeter-service-monitor
+  namespace: myproject
+spec:
+  endpoints:
+  - interval: 5s
+    port: 8080-tcp
+    scheme: http
+  selector:
+    matchLabels:
+      app: jmeter
