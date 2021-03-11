@@ -40,7 +40,11 @@ For some of the possible value for Kafka settings, please refer to [Apache Kafka
 
 Run the container:
 
-`docker run -p 9270:9270 -e "JMETER_THREADS=50" -e "BOOTSTRAP_SERVERS=192.168.0.117:9092" -e "PROMETHEUS_PORT=9270" -e "PROMETHEUS_HOST=0.0.0.0" -e "RAMUP_PERIOD=50" -e "LOOP_COUNT=-1" -it chengkuan/jmeter-kafka:1.0`
+```
+
+docker run -p 9270:9270 -e "JMETER_THREADS=50" -e "BOOTSTRAP_SERVERS=192.168.0.117:9092" -e "PROMETHEUS_PORT=9270" -e "PROMETHEUS_HOST=0.0.0.0" -e "RAMUP_PERIOD=50" -e "LOOP_COUNT=-1" -it chengkuan/jmeter-kafka:1.0
+
+```
 
 > Please refer the [supported parameters](#supported-parameters) to customize the load test.
 
@@ -48,7 +52,11 @@ Run the container:
 
 Run the following `oc new-app` command to deploy the container into the OpenShift:
 
-`oc new-app --docker-image=docker.io/chengkuan/jmeter-kafka:1.0 --name=jmeter-kafka -e "JMETER_THREADS=1" -e "BOOTSTRAP_SERVERS=my-cluster-kafka-bootstrap:9092" -e "PROMETHEUS_PORT=8080" -e "PROMETHEUS_HOST=0.0.0.0" -e "RAMUP_PERIOD=120" -e "LOOP_COUNT=-1" -e "KAFKA_TOPIC=jmeter-test" -l app=jmeter -n jmeter`
+```
+
+oc new-app --docker-image=docker.io/chengkuan/jmeter-kafka:1.0 --name=jmeter-kafka -e "JMETER_THREADS=1" -e "BOOTSTRAP_SERVERS=my-cluster-kafka-bootstrap:9092" -e "PROMETHEUS_PORT=8080" -e "PROMETHEUS_HOST=0.0.0.0" -e "RAMUP_PERIOD=120" -e "LOOP_COUNT=-1" -e "KAFKA_TOPIC=jmeter-test" -l app=jmeter -n jmeter
+
+```
 
 The parameters can be set via the POD environment flag `-e`
 
