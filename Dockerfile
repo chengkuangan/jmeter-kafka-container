@@ -3,17 +3,18 @@ FROM registry.access.redhat.com/ubi8/openjdk-11
 ARG JMETER_VERSION="5.4.1"
 ARG KAFKA_CLIENT_VERSION="2.7.0"
 ARG PROMETHEUS_PLUGIN_VERSION="0.6.0"
+ENV JMETER_CONTAINER_VERSION="1.0.0"
+ENV CONTAINER_NAME="JMeter Container for Kafka Load Testing"
 
-LABEL name="JMeter - with Apache Kafka Load Teat Tool" \
-      vendor="Apache" \
-      io.k8s.display-name="JMeter - with Apache Kafka Load Teat Tool" \
-      io.k8s.description="Load test using JMeter for Apache Kafka" \
-      summary="Load test using JMeter for Apache Kafka" \
-      io.openshift.tags="jmeter" \
+LABEL name="${CONTAINER_NAME}" \
+      io.k8s.display-name="${CONTAINER_NAME}" \
+      io.k8s.description="${CONTAINER_NAME}" \
+      summary="${CONTAINER_NAME}" \
+      io.openshift.tags="jmeter,kafka" \
       build-date="2021-03-10" \
       version="${JMETER_VERSION}" \
       kafkaclientversion="${KAFKA_CLIENT_VERSION}" \ 
-      release="1" \
+      release="${JMETER_CONTAINER_VERSION}" \
       maintainer="CK Gan <chengkuan@gmail.com>"
 
 USER root
@@ -40,6 +41,7 @@ RUN mkdir -p ${JMETER_TESTPLANS}
 COPY ./testplans/* ${JMETER_TESTPLANS}/
 COPY ./run.sh ${JMETER_BIN}/
 RUN chmod +x ${JMETER_BIN}/run.sh
+RUN date > ${JMETER_HOME}/build-date.txt
 
 EXPOSE 8080
 

@@ -6,9 +6,7 @@ The container can be deployed into Docker Engine or OpenShift Container Platform
 
 The following are the support parameters.
 
-> Note: JMeter command line properties does not accept value with spaces. Please use zero space property value. For example, use `This-is-kafka-message` instead of `This is kafka message` for `KAFKA_MESSAGE`. Some parameters allows spaces as per described at the following.
-
-For some of the possible value for Kafka settings, please refer to [Apache Kafka producer configuration](https://kafka.apache.org/documentation/#producerconfigs).
+> For some of the possible configurable values for Kafka settings listed below, please refer to [Apache Kafka producer configuration](https://kafka.apache.org/documentation/#producerconfigs).
 
 | Parameters                          | Description                                                                           | Default  |
 | ------------------------------------|:--------------------------------------------------------------------------------------| :-----:|
@@ -27,12 +25,12 @@ For some of the possible value for Kafka settings, please refer to [Apache Kafka
 |PROMETHEUS_PORT                      | JMeter Prometheus port to expose                                                      | 9270 |
 |PROMETHEUS_HOST                      | JMeter Prometheus host to listen to                                                   | 127.0.0.1 |
 |SAMPLER_LABEL                        | JMeter sampler label                                                                  | Kafka JSR223 |
-|KAFKA_MESSAGE                        | Kafka message                                                                         | The fox is flying over the fence and the fence is trying to stop the fox. |
+|KAFKA_MESSAGE                        | Kafka message. The default message size is about 73 bytes. You can create your desire message with the right size manually.                                                                         | The fox is flying over the fence and the fence is trying to stop the fox. |
 |THREADGROUP_SCHEDULER                | JMeter thread group scheduler a.k.a Specify Thread Lifetime.                          | false |
 |THREADGROUP_DURATION                 | JMeter thread group duration in seconds. Required when THREADGROUP_SCHEDULER is true  | 0 |
 |THREADGROUP_DELAY                    | JMeter thread group delay in seconds. Required when THREADGROUP_SCHEDULER is true.    | 0 |
-|THREADGROUP_SAME_USER_NEXT_ITERATION | JMeter a.k.a Same user on each iteration                                              | false |
-|THREADGROUP_DELAYSTART               | JMeter a.k.a Delay Thread creation until needed.                                      | true |
+|THREADGROUP_SAME_USER_NEXT_ITERATION | JMeter Same user on each iteration                                              | false |
+|THREADGROUP_DELAYSTART               | JMeter Delay Thread creation until needed.                                      | true |
 |HEAP                                 | JMeter JVM Heap size. Spaces are allowed.                                             | -Xms512m -Xmx2048m |
 
 
@@ -42,7 +40,7 @@ Run the container:
 
 ```
 
-docker run -p 9270:9270 -e "JMETER_THREADS=50" -e "BOOTSTRAP_SERVERS=192.168.0.117:9092" -e "PROMETHEUS_PORT=9270" -e "PROMETHEUS_HOST=0.0.0.0" -e "RAMUP_PERIOD=50" -e "LOOP_COUNT=-1" -it chengkuan/jmeter-kafka:1.0
+docker run -p 9270:9270 -e "JMETER_THREADS=50" -e "BOOTSTRAP_SERVERS=192.168.0.117:9092" -e "PROMETHEUS_PORT=9270" -e "PROMETHEUS_HOST=0.0.0.0" -e "RAMUP_PERIOD=50" -e "LOOP_COUNT=-1" -it chengkuan/jmeter-kafka:1.0 -e "KAFKA_MESSAGE=This is my kafka message"
 
 ```
 
@@ -54,30 +52,42 @@ Run the following `oc new-app` command to deploy the container into the OpenShif
 
 ```
 
-oc new-app --docker-image=docker.io/chengkuan/jmeter-kafka:1.0 --name=jmeter-kafka -e "JMETER_THREADS=1" -e "BOOTSTRAP_SERVERS=my-cluster-kafka-bootstrap:9092" -e "PROMETHEUS_PORT=8080" -e "PROMETHEUS_HOST=0.0.0.0" -e "RAMUP_PERIOD=120" -e "LOOP_COUNT=-1" -e "KAFKA_TOPIC=jmeter-test" -l app=jmeter -n jmeter
+oc new-app --docker-image=docker.io/chengkuan/jmeter-kafka:1.0 --name=jmeter-kafka -e "JMETER_THREADS=1" -e "BOOTSTRAP_SERVERS=my-cluster-kafka-bootstrap:9092" -e "PROMETHEUS_PORT=8080" -e "PROMETHEUS_HOST=0.0.0.0" -e "RAMUP_PERIOD=120" -e "LOOP_COUNT=-1" -e "KAFKA_TOPIC=jmeter-test" -e "KAFKA_MESSAGE=This is my kafka message" -l app=jmeter -n jmeter
 
 ```
-
-The parameters can be set via the POD environment flag `-e`
 
 > Please refer the [supported parameters](#supported-parameters) to customize the load test.
 
 # Quick Setup to Experience it on OpenShift
 
-There is a configuration script that you can use to quickly configure and deploy Red Hat AMQ Streams, Kafka Topic, Promethues and Grafana. 
+There is a [bash script](/bin/deploy.sh) included that you can use to quickly deploy and configure Red Hat AMQ Streams, Kafka Topic, Promethues and Grafana. 
 
 Clone this repo into your local directory and ensure that the Red Hat AMQ Streams Operator is installed and ready. Run the following command from the `bin` directory to deploy the environment. 
 
-`deploy.sh -i`
+`./deploy.sh -i`
+
+> Refer to [This is How You Can Load Test Apache Kafka on OpenShift Container Platform Using Apache JMeter](https://braindose.blog/2021/03/11/load-test-apache-kafka-openshift-apache-jmeter/) for more details.
 
 # Limitations
 
-- You cannot change the test plan out of the box other than configuring it via the [supported parameters](#supported-parameters). Please feedback if any sound enhancement could be done.
-- You can only load test one Kafka Topic at a time. Consider running multiple containers for different topic load test. It is not designed for remote JMeter load test. By running the container on OpenShift, there is no need of JMeter remote for huge load test, you can basically runs multiple PODs to increase the load test.
+- You cannot change the test plan included without rebuild the container.
+- You can only load test one Kafka Topic at a time with one container. However you can run multiple container for more one Kafka topics with each container for different topic. By running the container on OpenShift, there is no need of JMeter server for huge load test, you can basically scale to multiple PODs to increase the load test.
+
+# List of Files
+
+- [JMeter test plan](/testplans/kafka-jmeter-testplan.jmx) used in this project. It is built into the container.
+- Grafana dashboards json files. At the moment this is written, I am using the latest version of Grafana locally but OpenShift is using an older version. I have to maintain a separate json files for different Grafana versions.
+    - JMeter
+        - [JMeter dashboard for OpenShift](/templates/jmeter/grafana/openshift/jmeter-dashboard.json)
+        - [JMeter dashboard for lastest Grafana](/templates/jmeter/grafana/docker/jmeter-dashboard.json)
+    - Kafka
+        - [Kafka dashboard for OpenShift](/templates/kafka/grafana/openshift/kafka-dashboard.json)
+        - [Kafka dashboard for lastest Grafana](/templates/kafka/grafana/docker/kafka-dashboard.json)
+- [Sample Prometheus configuration yml file](/templates/docker-prometheus.yml). This is used if you need to run the environment locally in your PC with Promethues container.
 
 # Development Setup
 
-This section is meant for steps to setup your own local development environment.
+This section is meant for steps required to setup your own local development environment.
 
 In order to do local development and test, you will need to have the following servers:
 
@@ -109,8 +119,11 @@ export KAFKA_OPTS="-javaagent:$JMETER_HOME/prometheus/prometheus_agent/jmx_prome
 
 > Make sure you are using the correct paths.
 
-> Note: Please ensure the Kafka broker with the proper advertised listener so that the Kafka client inside the JMeter container can reply properly to broker. Usually this is not an issue if hostname is resolvable to public IP. But if you running this locally for testing, the default setting will be translated into localhost:9092 which will cause the Kafka client failed to connect back to Kafka broker when Kafka broker responded with the advertised listener. This can be changed in the config/server.properties.
-`advertised.listeners=PLAINTEXT://192.168.0.103:9092`
+> Note: Please ensure the Kafka broker configuration is with the proper advertised listener so that the Kafka client inside the JMeter container can reply properly to broker. Usually this is not an issue if hostname is resolvable to public IP. But if you running this locally for testing, the default setting will be translated into `localhost:9092` which will cause the Kafka client failed to connect back to Kafka broker when Kafka broker responses with the advertised listener. This can be changed in the `config/server.properties`.
+
+```
+advertised.listeners=PLAINTEXT://192.168.0.103:9092
+```
 
 ### Running JMeter Locally
 
@@ -137,7 +150,7 @@ docker run \
     prom/prometheus
 ```
 
-> Make the path to the `docker-prometheus.yml` is correct.
+> Make sure the path to the `docker-prometheus.yml` is correct.
 
 The following is the sample of prometheus.yml:
 
@@ -196,13 +209,7 @@ You can use Grafana Docker container for local try out.
 
 ### Import the Sample Grafana Dashboard
 
-Import the following sample dashboards for JMeter and Kafka:
-- For local or Docker container environments
-    - [JMeter Dashboard](/templates/grafana/docker/jmeter-dashboard.json)
-    - [Kafka Dashboard](/templates/grafana/docker/kafka-dashboard.json)
-- For OpenShift
-
-The dashboards looks like the following.
+Import the following sample dashboards for JMeter and Kafka. Please refer [List of Files](#list-of-files) for which files to import.
 
 JMeter Grafana Dashboard
 
@@ -220,32 +227,28 @@ Kafka Grafana Dashboard on OpenShift
 
 ![alt text](img/grafana-kafka-ocp-dashboard.png "Kafka Grafana Dashboard on OpenShift")
 
-### To Build the JMeter Container in Docker
-
-`docker build -t chengkuan/jmeter-kafka:1.0 .`
-
-### Additional Tips on Local Development
-
-1. To access to Docker files (on MacOS):
-
-    1. Create a command alias.
-
-       `alias dm-disk='docker run --rm -it -v /:/docker alpine:edge $@'`
-
-    2. Cat the content of JMeter results.
-
-       `dm-disk cat /docker/var/lib/docker/volumes/jmeter-data/_data/jmeter-results/kafka-jmeter-result.jtl`
+### To Build the JMeter Container using Docker
+```
+docker build -t chengkuan/jmeter-kafka:1.0 .
+```
+### To Build the JMeter Container using Podman
+```
+podman build -t chengkuan/jmeter-kafka:1.0 .
+```
 
 ## Versions Used in This Project
 
-- Apache JMeter v5.4.1
-- UBI8 openjdk-11 container image from Red Hat.
-- Kafka Client 2.7.0
-- JMeter Promethues Plug-in 0.6.0
+- [Apache JMeter v5.4.1](https://downloads.apache.org//jmeter/binaries/apache-jmeter-5.4.1.tgz)
+- [UBI8 openjdk-11 container image](https://catalog.redhat.com/software/containers/ubi8/openjdk-11/5dd6a4b45a13461646f677f4?gti-tabs=unauthenticated) from Red Hat.
+- [Kafka Client 2.7.0](https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients/2.7.0)
+- [JMeter Promethues Plug-in 0.6.0](https://repo1.maven.org/maven2/com/github/johrstrom/jmeter-prometheus-plugin/0.6.0/jmeter-prometheus-plugin-0.6.0.jar)
+- [Kafka JMX Exporter for Prometheus 0.15.0](https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.15.0/jmx_prometheus_javaagent-0.15.0.jar)
 
 
 
 # References
 
 - Refer to [This is How You Can Load Test Apache Kafka on OpenShift Container Platform Using Apache JMeter](https://braindose.blog/2021/03/11/load-test-apache-kafka-openshift-apache-jmeter/) for detail explanation and steps.
+- [Kafka JMX Exporter for Prometheus](https://github.com/prometheus/jmx_exporter)
+- [JMeter Prometheus Plugin](https://github.com/johrstrom/jmeter-prometheus-plugin)
 
