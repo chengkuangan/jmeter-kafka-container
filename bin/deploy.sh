@@ -18,8 +18,19 @@ KAFKA_TEMPLATE_FILENAME="kafka-persistent.yaml"
 PARTITION_REPLICA_NUM=3
 TOPIC_PARTITION_NUM="3"
 KAFKA_TOPIC="jmeter-kafka"
-KAFKA_VERSION="2.5.0"
-KAFKA_LOGFORMAT_VERSION="2.5"
+KAFKA_VERSION="2.6.0"
+KAFKA_LOGFORMAT_VERSION="2.6"
+TRANSACTION_STATE_LOG_MIN_ISR="2"
+BACKGROUND_THREADS="10"      
+MIN_INSYNC_REPLICAS="1"      
+REPLICA_FETCH_MAX_BYTES="1048576"
+REPLICA_SOCKET_RECEIVE_BUFFER_BYTES="65536"
+NUM_REPLICA_FETCHERS="1"
+NUM_IO_THREADS="8"
+NUM_NETWORK_THREADS="3"
+NUM_REPLICA_FETCHER="3"
+REPLICA_FETCH_MIN_BYTES="1"
+REPLICA_FETCH_RESPONSE_MAX_BYTES="10485760"
 
 
 RED='\033[1;31m'
@@ -102,6 +113,17 @@ function printVariables(){
     echo "KAFKA_TOPIC = $KAFKA_TOPIC"
     echo "KAFKA_VERSION = $KAFKA_VERSION" 
     echo "KAFKA_LOGFORMAT_VERSION = $KAFKA_LOGFORMAT_VERSION"
+    echo "TRANSACTION_STATE_LOG_MIN_ISR = $TRANSACTION_STATE_LOG_MIN_ISR"
+    echo "BACKGROUND_THREADS = $BACKGROUND_THREADS"      
+    echo "MIN_INSYNC_REPLICAS = $MIN_INSYNC_REPLICAS"      
+    echo "REPLICA_FETCH_MAX_BYTES = $REPLICA_FETCH_MAX_BYTES"
+    echo "REPLICA_SOCKET_RECEIVE_BUFFER_BYTES = $REPLICA_SOCKET_RECEIVE_BUFFER_BYTES"
+    echo "NUM_REPLICA_FETCHERS = $NUM_REPLICA_FETCHERS"
+    echo "NUM_IO_THREADS = $NUM_IO_THREADS"
+    echo "NUM_NETWORK_THREADS = $NUM_NETWORK_THREADS"
+    echo "NUM_REPLICA_FETCHER = $NUM_REPLICA_FETCHER"
+    echo "REPLICA_FETCH_MIN_BYTES = $REPLICA_FETCH_MIN_BYTES"
+    echo "REPLICA_FETCH_RESPONSE_MAX_BYTES = $REPLICA_FETCH_RESPONSE_MAX_BYTES"
     echo
 
 }
@@ -125,23 +147,31 @@ function configurePrometheus(){
     echo
     echo "Configuring Grafana for $APPS_NAMESPACE namespace ... "
     echo
+    
     cp ../templates/grafana-sa.yaml ../tmp/grafana-sa.yaml
     catchError "Error copying ../templates/grafana-sa.yaml."
+
     sed -i -e "s/myproject/$APPS_NAMESPACE/" ../tmp/grafana-sa.yaml
     catchError "Error sed ../tmp/grafana-sa.yaml."
+
     oc apply -f ../tmp/grafana-sa.yaml -n $APPS_NAMESPACE
     catchError "Error oc applying ../tmp/grafana-sa.yaml."
 
     GRAFANA_SA_TOKEN="$(oc serviceaccounts get-token grafana-serviceaccount -n $APPS_NAMESPACE)"
     catchError "Error get-token for grafana-serviceaccount"
+
     cp ../templates/datasource.yaml ../tmp/datasource.yaml
     catchError "Error copying ../templates/datasource.yaml."
+
     sed -i -e "s/GRAFANA-ACCESS-TOKEN/$GRAFANA_SA_TOKEN/" ../tmp/datasource.yaml
     catchError "Error sed for ../tmp/datasource.yaml"
+
     oc create configmap grafana-config --from-file=../tmp/datasource.yaml -n $APPS_NAMESPACE
     catchError "Error create configmap grafana-config"
+
     oc apply -f ../templates/grafana.yaml -n $APPS_NAMESPACE
     catchError "Error applying ../templates/grafana.yaml"
+
     oc create route edge grafana --service=grafana -n $APPS_NAMESPACE
     catchError "Error create route edge grafana"
 }
@@ -165,8 +195,10 @@ function configurePrometheus4JMeter(){
     
     cp ../templates/jmeter/prometheus/jmeter-service-monitor.yml ../tmp/jmeter-service-monitor.yml
     catchError "Error copying ../templates/jmeter/prometheus/jmeter-service-monitor.yml"
+
     sed -i -e "s/myproject/$APPS_NAMESPACE/" ../tmp/jmeter-service-monitor.yml
     catchError "Error sed ../tmp/jmeter-service-monitor.yml"
+
     oc apply -f ../tmp/jmeter-service-monitor.yml  -n $APPS_NAMESPACE
     catchError "Error applying ../tmp/jmeter-service-monitor.yml"
 }
@@ -194,18 +226,52 @@ function deployKafka(){
     
     cp ../templates/kafka/$KAFKA_TEMPLATE_FILENAME ../tmp/$KAFKA_TEMPLATE_FILENAME
     catchError "Error copying ../templates/kafka/$KAFKA_TEMPLATE_FILENAME"
+
     sed -i -e "s/version:.*/version: $KAFKA_VERSION/" ../tmp/$KAFKA_TEMPLATE_FILENAME
     catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"
+
     sed -i -e "s/log.message.format.version:.*/log.message.format.version: \"$KAFKA_LOGFORMAT_VERSION\"/" ../tmp/$KAFKA_TEMPLATE_FILENAME
     catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"
+
     sed -i -e "s/kafka-sizing/$APPS_NAMESPACE/" ../tmp/$KAFKA_TEMPLATE_FILENAME
     catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"
+
     sed -i -e "s/my-cluster/$KAFKA_CLUSTER_NAME/" ../tmp/$KAFKA_TEMPLATE_FILENAME
     catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"
-    sed -i -e "s/transaction.state.log.min.isr:.*/transaction.state.log.min.isr: $(($PARTITION_REPLICA_NUM-1))/" ../tmp/$KAFKA_TEMPLATE_FILENAME
+
+    sed -i -e "s/transaction.state.log.min.isr:.*/transaction.state.log.min.isr: $TRANSACTION_STATE_LOG_MIN_ISR/" ../tmp/$KAFKA_TEMPLATE_FILENAME
     catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"
-    sed -i -e "s/min.insync.replicas:.*/min.insync.replicas: $(($PARTITION_REPLICA_NUM-1))/" ../tmp/$KAFKA_TEMPLATE_FILENAME
+
+    sed -i -e "s/min.insync.replicas:.*/min.insync.replicas: $MIN_INSYNC_REPLICAS/" ../tmp/$KAFKA_TEMPLATE_FILENAME
     catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"
+
+    sed -i -e "s/background.threads:.*/background.threads: $BACKGROUND_THREADS/" ../tmp/$KAFKA_TEMPLATE_FILENAME
+    catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"
+
+    sed -i -e "s/replica.fetch.max.bytes:.*/replica.fetch.max.bytes: $REPLICA_FETCH_MAX_BYTES/" ../tmp/$KAFKA_TEMPLATE_FILENAME
+    catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"
+
+    sed -i -e "s/replica.socket.receive.buffer.bytes:.*/replica.socket.receive.buffer.bytes: $REPLICA_SOCKET_RECEIVE_BUFFER_BYTES/" ../tmp/$KAFKA_TEMPLATE_FILENAME
+    catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"
+
+    sed -i -e "s/num.replica.fetchers:.*/num.replica.fetchers: $NUM_REPLICA_FETCHERS/" ../tmp/$KAFKA_TEMPLATE_FILENAME
+    catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"
+
+    sed -i -e "s/num.io.threads:.*/num.io.threads: $NUM_IO_THREADS/" ../tmp/$KAFKA_TEMPLATE_FILENAME
+    catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"
+
+    sed -i -e "s/num.network.threads:.*/num.network.threads: $NUM_NETWORK_THREADS/" ../tmp/$KAFKA_TEMPLATE_FILENAME
+    catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"
+
+    sed -i -e "s/num.replica.fetchers:.*/num.replica.fetchers: $NUM_REPLICA_FETCHER/" ../tmp/$KAFKA_TEMPLATE_FILENAME
+    catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"
+
+    sed -i -e "s/replica.fetch.min.bytes:.*/replica.fetch.min.bytes: $REPLICA_FETCH_MIN_BYTES/" ../tmp/$KAFKA_TEMPLATE_FILENAME
+    catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"
+
+    sed -i -e "s/replica.fetch.response.max.bytes:.*/replica.fetch.response.max.bytes: $REPLICA_FETCH_RESPONSE_MAX_BYTES/" ../tmp/$KAFKA_TEMPLATE_FILENAME
+    catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"
+
     echo 
     printHeader "--> Deploying AMQ Streams (Kafka) Cluster now ... Using ../templates/kafka/$KAFKA_TEMPLATE_FILENAME ..."
     oc apply -f ../tmp/$KAFKA_TEMPLATE_FILENAME -n $APPS_NAMESPACE
@@ -303,6 +369,86 @@ function readInput(){
         read INPUT_VALUE
         if [ "$INPUT_VALUE" != "" ] && [ "$INPUT_VALUE" != "q" ]; then
             PARTITION_REPLICA_NUM="$INPUT_VALUE"
+        fi
+
+        checkQuitInput $INPUT_VALUE
+
+        printf "Min ISR [$MIN_INSYNC_REPLICAS]:"
+        read INPUT_VALUE
+        if [ "$INPUT_VALUE" != "" ] && [ "$INPUT_VALUE" != "q" ]; then
+            MIN_INSYNC_REPLICAS="$INPUT_VALUE"
+        fi
+
+        checkQuitInput $INPUT_VALUE
+
+        printf "No Replica Fetcher [$NUM_REPLICA_FETCHERS]:"
+        read INPUT_VALUE
+        if [ "$INPUT_VALUE" != "" ] && [ "$INPUT_VALUE" != "q" ]; then
+            NUM_REPLICA_FETCHERS="$INPUT_VALUE"
+        fi
+
+        checkQuitInput $INPUT_VALUE
+
+        printf "Replica Fetch Min Bytes [$REPLICA_FETCH_MIN_BYTES]:"
+        read INPUT_VALUE
+        if [ "$INPUT_VALUE" != "" ] && [ "$INPUT_VALUE" != "q" ]; then
+            REPLICA_FETCH_MIN_BYTES="$INPUT_VALUE"
+        fi
+
+        checkQuitInput $INPUT_VALUE
+
+        printf "Replica Fetch Max Bytes [$REPLICA_FETCH_MAX_BYTES]:"
+        read INPUT_VALUE
+        if [ "$INPUT_VALUE" != "" ] && [ "$INPUT_VALUE" != "q" ]; then
+            REPLICA_FETCH_MAX_BYTES="$INPUT_VALUE"
+        fi
+
+        checkQuitInput $INPUT_VALUE
+
+        printf "Replica Fetch Response Max Bytes [$REPLICA_FETCH_RESPONSE_MAX_BYTES]:"
+        read INPUT_VALUE
+        if [ "$INPUT_VALUE" != "" ] && [ "$INPUT_VALUE" != "q" ]; then
+            REPLICA_FETCH_RESPONSE_MAX_BYTES="$INPUT_VALUE"
+        fi
+
+        checkQuitInput $INPUT_VALUE
+
+        printf "Replica Socket Receive Buffer Bytes [$REPLICA_SOCKET_RECEIVE_BUFFER_BYTES]:"
+        read INPUT_VALUE
+        if [ "$INPUT_VALUE" != "" ] && [ "$INPUT_VALUE" != "q" ]; then
+            REPLICA_SOCKET_RECEIVE_BUFFER_BYTES="$INPUT_VALUE"
+        fi
+
+        checkQuitInput $INPUT_VALUE
+
+        printf "Transaction State Log Min ISR [$TRANSACTION_STATE_LOG_MIN_ISR]:"
+        read INPUT_VALUE
+        if [ "$INPUT_VALUE" != "" ] && [ "$INPUT_VALUE" != "q" ]; then
+            TRANSACTION_STATE_LOG_MIN_ISR="$INPUT_VALUE"
+        fi
+
+        checkQuitInput $INPUT_VALUE
+
+        printf "Transaction State Log Min ISR [$BACKGROUND_THREADS]:"
+        read INPUT_VALUE
+        if [ "$INPUT_VALUE" != "" ] && [ "$INPUT_VALUE" != "q" ]; then
+            BACKGROUND_THREADS="$INPUT_VALUE"
+        fi
+
+        checkQuitInput $INPUT_VALUE
+
+        printf "Num IO Threads [$NUM_IO_THREADS]:"
+        read INPUT_VALUE
+        if [ "$INPUT_VALUE" != "" ] && [ "$INPUT_VALUE" != "q" ]; then
+            NUM_IO_THREADS="$INPUT_VALUE"
+        fi
+
+        checkQuitInput $INPUT_VALUE
+
+        printf "Num Network Threads [$NUM_NETWORK_THREADS]:"
+        read INPUT_VALUE
+        if [ "$INPUT_VALUE" != "" ] && [ "$INPUT_VALUE" != "q" ]; then
+            NUM_NETWORK_THREADS="$INPUT_VALUE"
         fi
 
         checkQuitInput $INPUT_VALUE

@@ -6,10 +6,6 @@ spec:
   kafka:
     version: 2.5.0
     replicas: 3
-    resources:
-      requests:
-        cpu: 1
-        memory: 1Gi
     listeners:
       plain:
         authentiation:
@@ -31,15 +27,15 @@ spec:
       log.cleaner.enable: true # Default true
       min.insync.replicas: 1 # Default 1
       #log.roll.hours: 168   # Default settings
-      #replica.fetch.max.bytes: 1048576  # Default settings
-      #replica.socket.receive.buffer.bytes: 65536  # Default settings
-      #num.replica.fetchers: 1 # Default settings
+      replica.fetch.max.bytes: 1048576  # Default settings
+      replica.socket.receive.buffer.bytes: 65536  # Default settings
       #num.partitions: 1 # Default 1
-      num.io.threads: 12 # Default 8
-      #num.network.threads: 3 # Default 3. The number of threads that the server uses for receiving requests from the network and sending responses to the network
-      num.replica.fetchers: 3 # Default 1. Number of fetcher threads used to replicate messages from a source broker. Increasing this value can increase the degree of I/O parallelism in the follower broker.
-      replica.fetch.min.bytes: 1024 # Default 1. Minimum bytes expected for each fetch response. If not enough bytes, wait up to replica.fetch.wait.max.ms (broker config)
+      num.io.threads: 8 # Default 8
+      num.network.threads: 3 # Default 3. The number of threads that the server uses for receiving requests from the network and sending responses to the network
+      num.replica.fetchers: 1 # Default 1. Number of fetcher threads used to replicate messages from a source broker. Increasing this value can increase the degree of I/O parallelism in the follower broker.
+      replica.fetch.min.bytes: 1 # Default 1. Minimum bytes expected for each fetch response. If not enough bytes, wait up to replica.fetch.wait.max.ms (broker config)
       # replica.socket.receive.buffer.bytes: 65536 # Default: 65536. The socket receive buffer for network requests
+      replica.fetch.response.max.bytes: 10485760
     storage:
       type: jbod
       volumes:
@@ -176,10 +172,6 @@ spec:
     replicas: 3
     config:
       maxClientCnxns: 60  #Default settings
-    resources:
-      requests:
-        cpu: 1
-        memory: 1Gi
     storage:
       type: persistent-claim
       size: 10Gi
