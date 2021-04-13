@@ -429,7 +429,7 @@ function readInput(){
 
         checkQuitInput $INPUT_VALUE
 
-        printf "Transaction State Log Min ISR [$BACKGROUND_THREADS]:"
+        printf "Background Threads [$BACKGROUND_THREADS]:"
         read INPUT_VALUE
         if [ "$INPUT_VALUE" != "" ] && [ "$INPUT_VALUE" != "q" ]; then
             BACKGROUND_THREADS="$INPUT_VALUE"
