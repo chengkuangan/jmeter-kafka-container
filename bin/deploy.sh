@@ -31,6 +31,8 @@ NUM_NETWORK_THREADS="3"
 NUM_REPLICA_FETCHER="3"
 REPLICA_FETCH_MIN_BYTES="1"
 REPLICA_FETCH_RESPONSE_MAX_BYTES="10485760"
+KAKFA_STORAGE_SIZE="100Gi"
+ZOOKEEPER_STORAGE_SIZE="10Gi"
 
 
 RED='\033[1;31m'
@@ -124,6 +126,8 @@ function printVariables(){
     echo "NUM_REPLICA_FETCHER = $NUM_REPLICA_FETCHER"
     echo "REPLICA_FETCH_MIN_BYTES = $REPLICA_FETCH_MIN_BYTES"
     echo "REPLICA_FETCH_RESPONSE_MAX_BYTES = $REPLICA_FETCH_RESPONSE_MAX_BYTES"
+    echo "KAKFA_STORAGE_SIZE = $KAKFA_STORAGE_SIZE"
+    echo "ZOOKEEPER_STORAGE_SIZE = $ZOOKEEPER_STORAGE_SIZE"
     echo
 
 }
@@ -270,6 +274,12 @@ function deployKafka(){
     catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"
 
     sed -i -e "s/replica.fetch.response.max.bytes:.*/replica.fetch.response.max.bytes: $REPLICA_FETCH_RESPONSE_MAX_BYTES/" ../tmp/$KAFKA_TEMPLATE_FILENAME
+    catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"
+
+    sed -i -e "s/size: 100Gi/size: $KAKFA_STORAGE_SIZE/" ../tmp/$KAFKA_TEMPLATE_FILENAME
+    catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"
+
+    sed -i -e "s/size: 10Gi/size: $ZOOKEEPER_STORAGE_SIZE/" ../tmp/$KAFKA_TEMPLATE_FILENAME
     catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"
 
     echo 
@@ -457,6 +467,22 @@ function readInput(){
         read INPUT_VALUE
         if [ "$INPUT_VALUE" != "" ] && [ "$INPUT_VALUE" != "q" ]; then
             KAFKA_TOPIC="$INPUT_VALUE"
+        fi
+
+        checkQuitInput $INPUT_VALUE
+
+        printf "Kafka Storage Size [$KAKFA_STORAGE_SIZE]:"
+        read INPUT_VALUE
+        if [ "$INPUT_VALUE" != "" ] && [ "$INPUT_VALUE" != "q" ]; then
+            KAKFA_STORAGE_SIZE="$INPUT_VALUE"
+        fi
+
+        checkQuitInput $INPUT_VALUE
+
+        printf "Zookeeper Storage Size [$ZOOKEEPER_STORAGE_SIZE]:"
+        read INPUT_VALUE
+        if [ "$INPUT_VALUE" != "" ] && [ "$INPUT_VALUE" != "q" ]; then
+            ZOOKEEPER_STORAGE_SIZE="$INPUT_VALUE"
         fi
 
         checkQuitInput $INPUT_VALUE
