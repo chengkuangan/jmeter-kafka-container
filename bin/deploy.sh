@@ -20,6 +20,7 @@ TOPIC_PARTITION_NUM="3"
 KAFKA_TOPIC="jmeter-kafka"
 KAFKA_VERSION="2.6.0"
 KAFKA_LOGFORMAT_VERSION="2.6"
+KAFKA_INTER_BROKER_PROTOCOL_VERSION="2.6"
 TRANSACTION_STATE_LOG_MIN_ISR="2"
 BACKGROUND_THREADS="10"      
 MIN_INSYNC_REPLICAS="1"      
@@ -115,6 +116,7 @@ function printVariables(){
     echo "KAFKA_TOPIC = $KAFKA_TOPIC"
     echo "KAFKA_VERSION = $KAFKA_VERSION" 
     echo "KAFKA_LOGFORMAT_VERSION = $KAFKA_LOGFORMAT_VERSION"
+    echo "KAFKA_INTER_BROKER_PROTOCOL_VERSION = $KAFKA_INTER_BROKER_PROTOCOL_VERSION"
     echo "TRANSACTION_STATE_LOG_MIN_ISR = $TRANSACTION_STATE_LOG_MIN_ISR"
     echo "BACKGROUND_THREADS = $BACKGROUND_THREADS"      
     echo "MIN_INSYNC_REPLICAS = $MIN_INSYNC_REPLICAS"      
@@ -234,8 +236,12 @@ function deployKafka(){
     sed -i -e "s/version:.*/version: $KAFKA_VERSION/" ../tmp/$KAFKA_TEMPLATE_FILENAME
     catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"
 
-    sed -i -e "s/log.message.format.version:.*/log.message.format.version: \"$KAFKA_LOGFORMAT_VERSION\"/" ../tmp/$KAFKA_TEMPLATE_FILENAME
+    sed -i -e "s/log.message.format.version:.*/log.message.format.version: '$KAFKA_LOGFORMAT_VERSION'/" ../tmp/$KAFKA_TEMPLATE_FILENAME
     catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"
+
+    sed -i -e "s/inter.broker.protocol.version:.*/inter.broker.protocol.version: '$KAFKA_INTER_BROKER_PROTOCOL_VERSION'/" ../tmp/$KAFKA_TEMPLATE_FILENAME
+    catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"
+    
 
     sed -i -e "s/kafka-sizing/$APPS_NAMESPACE/" ../tmp/$KAFKA_TEMPLATE_FILENAME
     catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"
@@ -366,6 +372,15 @@ function readInput(){
         fi
 
         checkQuitInput $INPUT_VALUE
+
+        printf "Kafka Inter Broker Protocol Version [$KAFKA_INTER_BROKER_PROTOCOL_VERSION]:"
+        read INPUT_VALUE
+        if [ "$INPUT_VALUE" != "" ] && [ "$INPUT_VALUE" != "q" ]; then
+            KAFKA_INTER_BROKER_PROTOCOL_VERSION="$INPUT_VALUE"
+        fi
+
+        checkQuitInput $INPUT_VALUE
+        
 
         printf "No of Partition [$TOPIC_PARTITION_NUM]:"
         read INPUT_VALUE
