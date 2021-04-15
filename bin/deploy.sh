@@ -290,7 +290,7 @@ function deployKafka(){
 
     echo 
     printHeader "--> Deploying AMQ Streams (Kafka) Cluster now ... Using ../templates/kafka/$KAFKA_TEMPLATE_FILENAME ..."
-    oc apply -f ../tmp/$KAFKA_TEMPLATE_FILENAME -n $APPS_NAMESPACE
+    oc create -f ../tmp/$KAFKA_TEMPLATE_FILENAME -n $APPS_NAMESPACE
     catchError "Error applying ../tmp/$KAFKA_TEMPLATE_FILENAME"
     
 }
