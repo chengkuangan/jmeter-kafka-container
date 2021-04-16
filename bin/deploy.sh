@@ -29,7 +29,7 @@ REPLICA_SOCKET_RECEIVE_BUFFER_BYTES="65536"
 NUM_REPLICA_FETCHERS="1"
 NUM_IO_THREADS="8"
 NUM_NETWORK_THREADS="3"
-NUM_REPLICA_FETCHER="3"
+#NUM_REPLICA_FETCHER="3"
 REPLICA_FETCH_MIN_BYTES="1"
 REPLICA_FETCH_RESPONSE_MAX_BYTES="10485760"
 KAKFA_STORAGE_SIZE="100Gi"
@@ -125,7 +125,7 @@ function printVariables(){
     echo "NUM_REPLICA_FETCHERS = $NUM_REPLICA_FETCHERS"
     echo "NUM_IO_THREADS = $NUM_IO_THREADS"
     echo "NUM_NETWORK_THREADS = $NUM_NETWORK_THREADS"
-    echo "NUM_REPLICA_FETCHER = $NUM_REPLICA_FETCHER"
+    #echo "NUM_REPLICA_FETCHER = $NUM_REPLICA_FETCHER"
     echo "REPLICA_FETCH_MIN_BYTES = $REPLICA_FETCH_MIN_BYTES"
     echo "REPLICA_FETCH_RESPONSE_MAX_BYTES = $REPLICA_FETCH_RESPONSE_MAX_BYTES"
     echo "KAKFA_STORAGE_SIZE = $KAKFA_STORAGE_SIZE"
@@ -273,8 +273,8 @@ function deployKafka(){
     sed -i -e "s/num.network.threads:.*/num.network.threads: $NUM_NETWORK_THREADS/" ../tmp/$KAFKA_TEMPLATE_FILENAME
     catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"
 
-    sed -i -e "s/num.replica.fetchers:.*/num.replica.fetchers: $NUM_REPLICA_FETCHER/" ../tmp/$KAFKA_TEMPLATE_FILENAME
-    catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"
+    #sed -i -e "s/num.replica.fetchers:.*/num.replica.fetchers: $NUM_REPLICA_FETCHER/" ../tmp/$KAFKA_TEMPLATE_FILENAME
+    #catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"
 
     sed -i -e "s/replica.fetch.min.bytes:.*/replica.fetch.min.bytes: $REPLICA_FETCH_MIN_BYTES/" ../tmp/$KAFKA_TEMPLATE_FILENAME
     catchError "Error sed ../tmp/$KAFKA_TEMPLATE_FILENAME"

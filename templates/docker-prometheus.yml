@@ -27,11 +27,11 @@ scrape_configs:
 
     static_configs:
     - targets: ['localhost:9090']
-  - job_name: 'jmeter'
+#  - job_name: 'jmeter'
     # metrics_path defaults to '/metrics'
     # scheme defaults to 'http'.
-    static_configs:
-    - targets: ['192.168.0.118:9270']
+#    static_configs:
+#    - targets: ['192.168.0.118:9270']
   - job_name: 'kafka'
     # metrics_path defaults to '/metrics'
     # scheme defaults to 'http'.
